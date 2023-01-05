@@ -24,4 +24,13 @@ class ListViewModel:ViewModel(){
         loadingLD.value = false
     }
 
+    fun detail() {
+        val fruit1 = Fruit(16055,"Nonie","http://dummyimage.com/75x100.jpg/cc0000/ffffff","5718444778","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada")
+
+        val fruitList:ArrayList<Fruit> = arrayListOf<Fruit>(fruit1)
+        fruitLD.value = fruitList
+        fruitLoadErrorLD.value = false
+        loadingLD.value = false
+    }
+
 }

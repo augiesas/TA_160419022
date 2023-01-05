@@ -4,7 +4,9 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Materi Kuliah/TA/TA_160419022/app/src/main/res/layout/activity_main.xml" value="0.17994100294985252" />
-        <entry key="..\:/Materi Kuliah/TA/TA_160419022/app/src/main/res/layout/fragment_history.xml" value="0.2015625" />
+        <entry key="..\:/Materi Kuliah/TA/TA_160419022/app/src/main/res/layout/detail_list_item.xml" value="0.75" />
+        <entry key="..\:/Materi Kuliah/TA/TA_160419022/app/src/main/res/layout/fragment_detail.xml" value="0.33" />
+        <entry key="..\:/Materi Kuliah/TA/TA_160419022/app/src/main/res/layout/fragment_history.xml" value="0.5" />
         <entry key="..\:/Materi Kuliah/TA/TA_160419022/app/src/main/res/layout/fragment_home.xml" value="0.22" />
         <entry key="..\:/Materi Kuliah/TA/TA_160419022/app/src/main/res/layout/history_list_item.xml" value="0.33" />
         <entry key="..\:/Materi Kuliah/TA/TA_160419022/app/src/main/res/menu/drawer_menu.xml" value="0.2015625" />
