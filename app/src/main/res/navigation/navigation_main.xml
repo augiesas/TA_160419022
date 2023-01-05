@@ -3,11 +3,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_main"
-    app:startDestination="@id/homeFragment">
+    app:startDestination="@id/itemHome">
 
     <fragment
-        android:id="@+id/homeFragment"
+        android:id="@+id/itemHome"
         android:name="id.ac.ubaya.ta_160419022.view.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/actionDetailFragment"
+            app:destination="@id/detailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="id.ac.ubaya.ta_160419022.view.DetailFragment"
+        android:label="fragment_detail"
+        tools:layout="@layout/fragment_detail" >
+        <action
+            android:id="@+id/actionMainFragment"
+            app:destination="@id/itemHome" />
+    </fragment>
+    <fragment
+        android:id="@+id/itemHistory"
+        android:name="id.ac.ubaya.ta_160419022.view.HistoryFragment"
+        android:label="fragment_history"
+        tools:layout="@layout/fragment_history" />
 </navigation>

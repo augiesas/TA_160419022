@@ -3,8 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Materi Kuliah/TA/TA_160419022/app/src/main/res/layout/activity_main.xml" value="0.31431159420289856" />
+        <entry key="..\:/Materi Kuliah/TA/TA_160419022/app/src/main/res/layout/activity_main.xml" value="0.17994100294985252" />
+        <entry key="..\:/Materi Kuliah/TA/TA_160419022/app/src/main/res/layout/fragment_history.xml" value="0.2015625" />
         <entry key="..\:/Materi Kuliah/TA/TA_160419022/app/src/main/res/layout/fragment_home.xml" value="0.22" />
+        <entry key="..\:/Materi Kuliah/TA/TA_160419022/app/src/main/res/layout/history_list_item.xml" value="0.5" />
+        <entry key="..\:/Materi Kuliah/TA/TA_160419022/app/src/main/res/menu/drawer_menu.xml" value="0.2015625" />
       </map>
     </option>
   </component>
