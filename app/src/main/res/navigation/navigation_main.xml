@@ -27,5 +27,9 @@
         android:id="@+id/itemHistory"
         android:name="id.ac.ubaya.ta_160419022.view.HistoryFragment"
         android:label="fragment_history"
-        tools:layout="@layout/fragment_history" />
+        tools:layout="@layout/fragment_history" >
+        <action
+            android:id="@+id/actionHistoryDetail"
+            app:destination="@id/detailFragment" />
+    </fragment>
 </navigation>
