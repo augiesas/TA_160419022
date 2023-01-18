@@ -2,30 +2,30 @@ package id.ac.ubaya.ta_160419022.view
 
 import android.app.Activity
 import android.content.pm.PackageManager
-import android.hardware.Camera
-import android.media.Image
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
+import android.util.Rational
 import android.view.LayoutInflater
+import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.Preview
+import androidx.camera.core.*
+import androidx.camera.core.impl.UseCaseGroup
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.PackageManagerCompat
+import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
 import com.google.common.util.concurrent.ListenableFuture
 import id.ac.ubaya.ta_160419022.R
 import kotlinx.android.synthetic.main.fragment_home.*
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class HomeFragment : Fragment() {
 
@@ -55,6 +55,16 @@ class HomeFragment : Fragment() {
 
         fabCapture.setOnClickListener {
             capture()
+
+            val action = HomeFragmentDirections.actionDetailFragment()
+            Navigation.findNavController(it).navigate(action)
+        }
+
+        if(permissionGranted()){
+            startCamera()
+        }
+        else {
+            ActivityCompat.requestPermissions(context as Activity, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
         }
 
         outputDirectory = getOutputDirectory()
@@ -65,16 +75,6 @@ class HomeFragment : Fragment() {
             File(it, resources.getString(R.string.app_name)).apply { mkdirs() }
         }
         return if (mediaDir != null && mediaDir.exists()) mediaDir else activity?.filesDir!!
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if(permissionGranted()){
-            startCamera()
-        }
-        else {
-            ActivityCompat.requestPermissions(context as Activity, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
-        }
     }
 
 
@@ -96,6 +96,7 @@ class HomeFragment : Fragment() {
             try {
                 // Unbind use cases before rebinding
                 cameraProvider.unbindAll()
+                Log.d("Test","harusnya masuk sini")
 
                 // Bind use cases to camera
                 camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture)
