@@ -1,6 +1,7 @@
 package id.ac.ubaya.ta_160419022.view
 
 import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -19,6 +20,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.PermissionChecker
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import com.google.common.util.concurrent.ListenableFuture
@@ -30,6 +32,7 @@ import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
+import java.util.jar.Manifest
 
 
 class HomeFragment : Fragment() {
@@ -44,6 +47,7 @@ class HomeFragment : Fragment() {
         private const val TAG = "camera"
         private const val FILENAME_FORMAT = "yyy-MM-dd-HH-mm-ss"
         private const val REQUEST_CODE_PERMISSIONS = 10
+        private const val IMAGE_PICK_CODE = 1
         private val REQUIRED_PERMISSIONS = arrayOf(android.Manifest.permission.CAMERA)
     }
 
@@ -59,6 +63,12 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // When choose from gallery
+        galleryButton.setOnClickListener {
+            pickFromGallery()
+        }
+
+        // When Captured
         captureButton.setOnClickListener {
             capture()
 
@@ -74,6 +84,13 @@ class HomeFragment : Fragment() {
         }
 
         outputDirectory = getOutputDirectory()
+    }
+
+    private fun pickFromGallery() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+
+        startActivityForResult(intent, IMAGE_PICK_CODE)
     }
 
     private fun getOutputDirectory(): File {
