@@ -3,6 +3,7 @@ package id.ac.ubaya.ta_160419022.view
 import android.app.Activity
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.util.Rational
@@ -11,6 +12,7 @@ import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.camera.core.*
 import androidx.camera.core.impl.UseCaseGroup
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -22,8 +24,11 @@ import androidx.navigation.Navigation
 import com.google.common.util.concurrent.ListenableFuture
 import id.ac.ubaya.ta_160419022.R
 import kotlinx.android.synthetic.main.fragment_home.*
+import java.io.Console
 import java.io.File
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 
@@ -50,10 +55,11 @@ class HomeFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        fabCapture.setOnClickListener {
+        captureButton.setOnClickListener {
             capture()
 
             val action = HomeFragmentDirections.actionDetailFragment()
@@ -107,15 +113,20 @@ class HomeFragment : Fragment() {
         }, context?.let { ContextCompat.getMainExecutor(it) })
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun capture() {
         // Saat capture ini masih save
-        // harus dirubah biar foto yang di dapet bukan ke save ta[i ke upload
+        // harus dirubah biar foto yang di dapet bukan ke save tapi ke upload
         // ==================================================================================================================================
 
         val imageCapture: ImageCapture = imageCapture?:return
 
         // Create file
-        val file = File(outputDirectory, SimpleDateFormat(FILENAME_FORMAT, Locale.JAPAN).format(System.currentTimeMillis())+".jpg")
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+        val current = LocalDateTime.now().format(formatter)
+        val file = File(outputDirectory,current+".jpg")
+
+        Log.d("Lihat", file.toString())
 
         val outputOptions = ImageCapture.OutputFileOptions.Builder(file).build()
 
@@ -123,6 +134,7 @@ class HomeFragment : Fragment() {
             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                 val savedUri: Uri = Uri.fromFile(file)
 
+                Log.d("Lihat 2", savedUri.toString())
                 Toast.makeText(context, "Photo captured on: \n\n $savedUri", Toast.LENGTH_SHORT).show()
             }
 

@@ -4,7 +4,10 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Materi Kuliah/TA/TA_160419022/app/src/main/res/drawable/background_drawable.xml" value="0.209" />
+        <entry key="..\:/Materi Kuliah/TA/TA_160419022/app/src/main/res/drawable/circle_button.xml" value="0.2815" />
+        <entry key="..\:/Materi Kuliah/TA/TA_160419022/app/src/main/res/drawable/ic_baseline_photo_camera_24.xml" value="0.2815" />
         <entry key="..\:/Materi Kuliah/TA/TA_160419022/app/src/main/res/drawable/ic_camborder.xml" value="0.209" />
+        <entry key="..\:/Materi Kuliah/TA/TA_160419022/app/src/main/res/drawable/ic_file_fill.xml" value="0.2815" />
         <entry key="..\:/Materi Kuliah/TA/TA_160419022/app/src/main/res/drawable/rectangle_dash.xml" value="0.209" />
         <entry key="..\:/Materi Kuliah/TA/TA_160419022/app/src/main/res/layout/activity_main.xml" value="0.17994100294985252" />
         <entry key="..\:/Materi Kuliah/TA/TA_160419022/app/src/main/res/layout/detail_list_item.xml" value="0.5" />
