@@ -335,7 +335,7 @@ class HomeFragment : Fragment() {
             .build()
 
         val request = Request.Builder()
-            .url("http://192.168.1.5:8000/predict")
+            .url("http://192.168.1.10:8000/predict")
             .post(requestBody)
             .build()
 
@@ -348,6 +348,10 @@ class HomeFragment : Fragment() {
             override fun onResponse(call: Call, response: Response) {
                 Log.d("test-berhasil 1",response.toString())
                 Log.d("test-berhasil 2",call.toString())
+
+                val json = response.body?.string()
+                val jsonObject = JSONObject(json)
+                Log.d("test-json",jsonObject.toString())
             }
         })
     }
