@@ -22,6 +22,9 @@
         <action
             android:id="@+id/actionMainFragment"
             app:destination="@id/itemHome" />
+        <argument
+            android:name="fileUri"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/itemHistory"

@@ -14,9 +14,9 @@ class ListViewModel:ViewModel(){
     val loadingLD = MutableLiveData<Boolean>()
 
     fun refresh() {
-        val fruit1 = Fruit(16055,"Nonie","http://dummyimage.com/75x100.jpg/cc0000/ffffff","5718444778","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada")
-        val fruit2 = Fruit(13312,"Rich","http://dummyimage.com/75x100.jpg/5fa2dd/ffffff","3925444073","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada")
-        val fruit3 = Fruit(11204,"Dinny","http://dummyimage.com/75x100.jpg/5fa2dd/ffffff1","6827808747","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada")
+        val fruit1 = Fruit(16055,"Nonie")
+        val fruit2 = Fruit(13312,"Rich")
+        val fruit3 = Fruit(11204,"Dinny")
 
         val fruitList:ArrayList<Fruit> = arrayListOf<Fruit>(fruit1, fruit2, fruit3)
         fruitLD.value = fruitList
@@ -25,7 +25,7 @@ class ListViewModel:ViewModel(){
     }
 
     fun detail() {
-        val fruit1 = Fruit(16055,"Nonie","http://dummyimage.com/75x100.jpg/cc0000/ffffff","5718444778","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada","ada")
+        val fruit1 = Fruit(16055,"Nonie")
 
         val fruitList:ArrayList<Fruit> = arrayListOf<Fruit>(fruit1)
         fruitLD.value = fruitList

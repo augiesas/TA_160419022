@@ -8,9 +8,10 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import id.ac.ubaya.ta_160419022.R
 import id.ac.ubaya.ta_160419022.model.Fruit
+import id.ac.ubaya.ta_160419022.model.FruitNutritionFacts
 import kotlinx.android.synthetic.main.history_list_item.view.*
 
-class HistoryListAdapter(val historyList: ArrayList<Fruit>):RecyclerView.Adapter<HistoryListAdapter.FruitViewHolder>(){
+class HistoryListAdapter(val historyList: ArrayList<NutritionListAdapter>):RecyclerView.Adapter<HistoryListAdapter.FruitViewHolder>(){
     class FruitViewHolder(var view:View) : RecyclerView.ViewHolder(view)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FruitViewHolder {
@@ -21,9 +22,9 @@ class HistoryListAdapter(val historyList: ArrayList<Fruit>):RecyclerView.Adapter
     }
 
     override fun onBindViewHolder(holder: FruitViewHolder, position: Int) {
-        holder.view.txtJudulBuah.text = historyList[position].id_buah.toString()
+        holder.view.txtJudulBuah.text = historyList[position].kategori.toString()
         holder.view.txtReadMore.setOnClickListener {
-            val action = HistoryFragmentDirections.actionHistoryDetail()
+            val action = HistoryFragmentDirections.actionHistoryDetail(null.toString())
             Navigation.findNavController(it).navigate(action)
         }
     }
@@ -32,7 +33,7 @@ class HistoryListAdapter(val historyList: ArrayList<Fruit>):RecyclerView.Adapter
         return historyList.size
     }
 
-    fun updateHistoryList(newHistoryList: List<Fruit>){
+    fun updateHistoryList(newHistoryList: List<NutritionListAdapter>){
         historyList.clear()
         historyList.addAll(newHistoryList)
         notifyDataSetChanged()

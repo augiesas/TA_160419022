@@ -1,13 +1,13 @@
 package id.ac.ubaya.ta_160419022.view
 
-import android.annotation.SuppressLint
+//import com.google.gson.GsonBuilder
+//import com.google.gson.JsonParser
+
 import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.*
-import android.media.Image
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -20,35 +20,31 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.camera.core.*
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import com.google.common.util.concurrent.ListenableFuture
-//import com.google.gson.GsonBuilder
-//import com.google.gson.JsonParser
+import com.google.gson.Gson
 import id.ac.ubaya.ta_160419022.R
+import id.ac.ubaya.ta_160419022.model.ApiResponse
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.io.*
 import java.net.HttpURLConnection
-import java.net.URI
 import java.net.URL
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
-import java.util.concurrent.Executors
 
 
 class HomeFragment : Fragment() {
@@ -57,6 +53,7 @@ class HomeFragment : Fragment() {
     private var imageCapture: ImageCapture?= null
     private var camera: androidx.camera.core.Camera?= null
     private var client: OkHttpClient ?= null
+    private var fileuri: String ?= null
 
     private lateinit var outputDirectory: File
 
@@ -82,8 +79,7 @@ class HomeFragment : Fragment() {
 
         // When choose from gallery
         galleryButton.setOnClickListener {
-//            pickFromGallery()
-            testAPI()
+            pickFromGallery()
         }
 
         // When Captured
@@ -203,7 +199,14 @@ class HomeFragment : Fragment() {
                     context?.sendBroadcast(mediaScanIntent)
                 }
 
-                sendPhoto(file)
+                fileuri = savedUri.path.toString()
+//                sendPhoto(savedUri.path.toString())
+
+                Log.d("fileuri",fileuri.toString())
+                val action = HomeFragmentDirections.actionDetailFragment(fileuri!!)
+                if (action != null) {
+                    Navigation.findNavController(view!!).navigate(action)
+                }
 
                 Log.d("test end","==============================================================================================================")
 
@@ -278,56 +281,15 @@ class HomeFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == IMAGE_PICK_CODE && resultCode == RESULT_OK)
         {
-            val action = HomeFragmentDirections.actionDetailFragment()
+            val action = HomeFragmentDirections.actionDetailFragment(fileuri!!)
             Navigation.findNavController(this.requireView()).navigate(action)
         }
     }
 
-    fun testAPI(){
-        // Create JSON using JSONObject
-        val jsonObject = JSONObject()
-        jsonObject.put("name", "Jack")
-        jsonObject.put("salary", "3540")
-        jsonObject.put("age", "23")
-
-        // Convert JSONObject to String
-        val jsonObjectString = jsonObject.toString()
-
-        GlobalScope.launch(Dispatchers.IO) {
-            val url = URL("http://192.168.1.8:8000/items")
-            val httpURLConnection = url.openConnection() as HttpURLConnection
-            httpURLConnection.requestMethod = "POST"
-            httpURLConnection.setRequestProperty("Content-Type", "application/json") // The format of the content we're sending to the server
-            httpURLConnection.setRequestProperty("Accept", "application/json") // The format of response we want to get from the server
-            httpURLConnection.doInput = true
-            httpURLConnection.doOutput = true
-
-            // Send the JSON we created
-            val outputStreamWriter = OutputStreamWriter(httpURLConnection.outputStream)
-            outputStreamWriter.write(jsonObjectString)
-            outputStreamWriter.flush()
-
-            // Check if the connection is successful
-            val responseCode = httpURLConnection.responseCode
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                val response = httpURLConnection.inputStream.bufferedReader()
-                    .use { it.readText() }  // defaults to UTF-8
-                withContext(Dispatchers.Main) {
-
-                    // Convert raw JSON to pretty JSON using GSON library
-//                    val gson = GsonBuilder().setPrettyPrinting().create()
-//                    val prettyJson = gson.toJson(JsonParser.parseString(response))
-//                    Log.d("Pretty Printed JSON :", prettyJson)
-
-                }
-            } else {
-                Log.e("HTTPURLCONNECTION_ERROR", responseCode.toString())
-            }
-        }
-    }
-
-    private fun sendPhoto(file: File) {
+    private fun sendPhoto(fileUri: String) {
         val client = OkHttpClient()
+
+        val file = File(fileUri)
 
         val requestBody: RequestBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
@@ -335,7 +297,7 @@ class HomeFragment : Fragment() {
             .build()
 
         val request = Request.Builder()
-            .url("http://192.168.1.10:8000/predict")
+            .url("http://192.168.1.8:8000/predict")
             .post(requestBody)
             .build()
 
@@ -351,46 +313,16 @@ class HomeFragment : Fragment() {
 
                 val json = response.body?.string()
                 val jsonObject = JSONObject(json)
-                Log.d("test-json",jsonObject.toString())
+//                val nutritionJsonArray = jsonObject.getJSONArray("nutrition")
+                Log.d("test-json1",jsonObject.toString())
+//                val result: ApiResponse = Gson().fromJson(json, ApiResponse::class.java)
+
+
+//                val gson = Gson()
+//                val responseBody = client.newCall(request).execute().body
+//                Log.d("test-json",responseBody!!.string())
+//                val entity:ApiResponse = gson.fromJson(responseBody!!.string(), ApiResponse::class.java)
             }
         })
     }
-
-//    fun Predict(testFeatures:ArrayList<Int>){
-//        // Load the SVM model from file
-//        val svmModel = joblib.load("E:/Materi Kuliah/TA/Program/Data/Model/model_CNN_SVM.sav")
-//
-//// Load the test features from file
-//        val testFeatures = // Load the test features using your preferred method
-//
-//// Make predictions on the test data
-//        val predictions = svmModel.predict(testFeatures)
-//
-//// Convert the predictions to a ByteBuffer
-//        val buffer = ByteBuffer.allocate(predictions.size * 4)
-//        buffer.order(ByteOrder.nativeOrder())
-//        for (prediction in predictions) {
-//            buffer.putFloat(prediction)
-//        }
-//        buffer.rewind()
-//
-//// Load the TensorFlow Lite model from file
-//        val model = Interpreter(FileInputStream("svm_model.tflite").channel.map(FileChannel.MapMode.READ_ONLY, 0, fileChannel.size()))
-//
-//// Allocate input and output tensors
-//        val inputTensor = model.getInputTensor(0)
-//        val outputTensor = model.getOutputTensor(0)
-//
-//// Run inference
-//        model.run(buffer, inputTensor.buffer)
-//        val outputBuffer = ByteBuffer.allocate(outputTensor.shape()[0] * outputTensor.dataType().byteSize())
-//        model.outputTensor(0).buffer.rewind().get(outputBuffer)
-//
-//// Print the predictions
-//        val submissionResults = FloatArray(outputTensor.shape()[0])
-//        outputBuffer.order(ByteOrder.nativeOrder()).asFloatBuffer().get(submissionResults)
-//        for (result in submissionResults) {
-//            println(result)
-//        }
-//    }
 }
