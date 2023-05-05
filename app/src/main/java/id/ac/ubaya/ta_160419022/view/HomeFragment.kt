@@ -30,19 +30,10 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import com.google.common.util.concurrent.ListenableFuture
-import com.google.gson.Gson
 import id.ac.ubaya.ta_160419022.R
-import id.ac.ubaya.ta_160419022.model.ApiResponse
 import kotlinx.android.synthetic.main.fragment_home.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import org.json.JSONObject
 import java.io.*
-import java.net.HttpURLConnection
-import java.net.URL
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -54,6 +45,7 @@ class HomeFragment : Fragment() {
     private var camera: androidx.camera.core.Camera?= null
     private var client: OkHttpClient ?= null
     private var fileuri: String ?= null
+    private var file:File ?= null
 
     private lateinit var outputDirectory: File
 
@@ -62,7 +54,7 @@ class HomeFragment : Fragment() {
         private const val FILENAME_FORMAT = "yyy-MM-dd-HH-mm-ss"
         private const val REQUEST_CODE_PERMISSIONS = 10
         private const val IMAGE_PICK_CODE = 100
-        private val REQUIRED_PERMISSIONS = arrayOf(android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        private val REQUIRED_PERMISSIONS = arrayOf(android.Manifest.permission.CAMERA)
     }
 
     override fun onCreateView(
@@ -76,24 +68,20 @@ class HomeFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         // When choose from gallery
         galleryButton.setOnClickListener {
             pickFromGallery()
         }
-
         // When Captured
         captureButton.setOnClickListener {
             capture()
         }
-
         if(permissionGranted()){
             startCamera()
         }
         else {
             ActivityCompat.requestPermissions(context as Activity, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
         }
-
         outputDirectory = getOutputDirectory()
     }
 
@@ -153,18 +141,12 @@ class HomeFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun capture() {
-        // Saat capture ini masih save
-        // harus dirubah biar foto yang di dapet bukan ke save tapi ke upload
-        // ==================================================================================================================================
-
         // Create file
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
         val current = LocalDateTime.now().format(formatter)
-        val file = File(outputDirectory,current+".jpg")
-//
-//        Log.d("Lihat", file.toString())
+        file = File(outputDirectory,current+".jpg")
 
-        val outputOptions = ImageCapture.OutputFileOptions.Builder(file).build()
+        val outputOptions = ImageCapture.OutputFileOptions.Builder(file!!).build()
 
         imageCapture?.takePicture(outputOptions, ContextCompat.getMainExecutor(requireContext()), object: ImageCapture.OnImageSavedCallback{
             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
@@ -173,26 +155,6 @@ class HomeFragment : Fragment() {
                 val savedUri = Uri.fromFile(file)
                 Log.d("test 2",savedUri.toString())
 
-                // Check if external storage is available
-                if (isExternalStorageAvailable()) {
-                    // Save the image to external storage
-                    val contentValues = ContentValues().apply {
-                        put(MediaStore.Images.Media.DISPLAY_NAME, file.name)
-                        put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
-                        put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
-                    }
-                    val externalContentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                    val contentResolver = context?.contentResolver
-                    val uri = contentResolver?.insert(externalContentUri, contentValues)
-                    val outputStream = uri?.let { contentResolver.openOutputStream(it) }
-                    outputStream?.use { file.inputStream().copyTo(it) }
-                } else {
-                    // Save the image to internal storage
-                    val outputInternalFile = File(context?.filesDir, file.name)
-                    val outputStream = FileOutputStream(outputInternalFile)
-                    outputStream.use { file.inputStream().copyTo(it) }
-                }
-
                 // Refresh the gallery to make the image visible
                 Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE).also { mediaScanIntent ->
                     mediaScanIntent.data = savedUri
@@ -200,9 +162,9 @@ class HomeFragment : Fragment() {
                 }
 
                 fileuri = savedUri.path.toString()
-//                sendPhoto(savedUri.path.toString())
 
                 Log.d("fileuri",fileuri.toString())
+                Log.d("filename", file!!.name)
                 val action = HomeFragmentDirections.actionDetailFragment(fileuri!!)
                 if (action != null) {
                     Navigation.findNavController(view!!).navigate(action)
@@ -220,57 +182,17 @@ class HomeFragment : Fragment() {
         })
     }
 
-    fun formData(file: File) {
-        GlobalScope.launch(Dispatchers.IO) {
-            val serverUrl = URL("http://192.168.1.8:8000/predict")
-//            val file = File(file)
-            val boundary = "-----------------------------12345"
-
-            val connection = serverUrl.openConnection() as HttpURLConnection
-            connection.requestMethod = "POST"
-            connection.doOutput = true
-            connection.doInput = true
-            connection.setRequestProperty(
-                "Content-Type",
-                "multipart/form-data; boundary=$boundary"
-            )
-
-            val outputStream = connection.outputStream
-            val writer = OutputStreamWriter(outputStream)
-
-
-            // Write the form-data with the filename and image file contents
-            writer.append("--$boundary\r\n")
-            writer.append("Content-Disposition: form-data; name=\"file\"; filename=\"${file.name}\"\r\n")
-            writer.append("Content-Type: image/png\r\n")
-            writer.append("\r\n")
-            writer.flush()
-
-            FileInputStream(file).use { fileInputStream ->
-                fileInputStream.copyTo(outputStream)
-            }
-
-            writer.append("\r\n")
-            writer.flush()
-            writer.append("--$boundary--\r\n")
-            writer.flush()
-
-            val responseCode = connection.responseCode
-            println("Response Code: $responseCode")
-
-            connection.disconnect()
-        }
-    }
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
         if (requestCode == REQUEST_CODE_PERMISSIONS){
+            Log.d("test-permission",requestCode.toString())
             if (permissionGranted()){
                 startCamera()
             } else {
+                Log.d("test-permission","masuk sini")
                 Toast.makeText(context, "This application need permission to access camera", Toast.LENGTH_LONG).show()
                 requireActivity().finish()
             }
@@ -284,45 +206,5 @@ class HomeFragment : Fragment() {
             val action = HomeFragmentDirections.actionDetailFragment(fileuri!!)
             Navigation.findNavController(this.requireView()).navigate(action)
         }
-    }
-
-    private fun sendPhoto(fileUri: String) {
-        val client = OkHttpClient()
-
-        val file = File(fileUri)
-
-        val requestBody: RequestBody = MultipartBody.Builder()
-            .setType(MultipartBody.FORM)
-            .addFormDataPart("file", file.name, RequestBody.create("image/jpeg".toMediaTypeOrNull(), file))
-            .build()
-
-        val request = Request.Builder()
-            .url("http://192.168.1.8:8000/predict")
-            .post(requestBody)
-            .build()
-
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-//                Toast.makeText(context, "Failed send photo to API", Toast.LENGTH_SHORT).show()
-                Log.e(TAG, "Photo capture failed: ${e.message}", e)
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                Log.d("test-berhasil 1",response.toString())
-                Log.d("test-berhasil 2",call.toString())
-
-                val json = response.body?.string()
-                val jsonObject = JSONObject(json)
-//                val nutritionJsonArray = jsonObject.getJSONArray("nutrition")
-                Log.d("test-json1",jsonObject.toString())
-//                val result: ApiResponse = Gson().fromJson(json, ApiResponse::class.java)
-
-
-//                val gson = Gson()
-//                val responseBody = client.newCall(request).execute().body
-//                Log.d("test-json",responseBody!!.string())
-//                val entity:ApiResponse = gson.fromJson(responseBody!!.string(), ApiResponse::class.java)
-            }
-        })
     }
 }

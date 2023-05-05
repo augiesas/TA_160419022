@@ -20,7 +20,6 @@ class MainActivity : AppCompatActivity() {
                 NavHostFragment).navController
         NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout)
         NavigationUI.setupWithNavController(navView, navController)
-//        bottomNav.setupWithNavController(navController)
     }
 
     override fun onSupportNavigateUp(): Boolean {

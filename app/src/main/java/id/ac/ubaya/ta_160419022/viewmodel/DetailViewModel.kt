@@ -4,6 +4,7 @@ import android.app.Application
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
@@ -19,6 +20,8 @@ import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.file.Files
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class DetailViewModel (application: Application) : AndroidViewModel(application) {
     val nutritionLiveData = MutableLiveData<ApiResponseNutrition>()
@@ -39,38 +42,29 @@ class DetailViewModel (application: Application) : AndroidViewModel(application)
         Log.d("test 3","masuk")
 
         val request = Request.Builder()
-            .url("http://192.168.1.9:8000/predict")
+            .url("http://192.168.1.7:8000/predict")
             .post(requestBody)
             .build()
         Log.d("test 4","masuk")
 
         client.newCall(request).enqueue(object : Callback {
+            @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call, response: Response) {
                 Log.d("test-berhasil 1",response.toString())
                 Log.d("test-berhasil 2",call.toString())
 
                 val json = response.body?.string()
                 Log.d("test-json",json.toString())
-
-//                val nutritionListType = object : TypeToken<ApiResponse>() {}.type
-//                val nutritionList: ApiResponse = Gson().fromJson(json, nutritionListType)
-
                 val result: ApiResponseNutrition = Gson().fromJson(json, ApiResponseNutrition::class.java)
                 Log.d("test-result",result.toString())
 
-//                nutritionLiveData.value = nutritionList
                 nutritionLiveData.postValue(result)
-
-//                loadingLiveData.value = false
                 loadingLiveData.postValue(false)
             }
 
             override fun onFailure(call: Call, e: IOException) {
                 nutritionLoadErrorLiveData.postValue(true)
-//                nutritionLoadErrorLiveData.value = true
                 loadingLiveData.postValue(false)
-
-//                loadingLiveData.value = false
             }
         })
     }

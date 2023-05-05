@@ -7,7 +7,7 @@
     tools:context=".view.HistoryFragment">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/refreshLayoutFavorite"
+        android:id="@+id/refreshLayoutHistory"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".view.StudentListFragment">
@@ -15,6 +15,16 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/btnRemove"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="16dp"
+                android:text="Remove All History"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recHistory"
@@ -25,7 +35,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/btnRemove" />
 
             <ProgressBar
                 android:id="@+id/progressLoadHistory"
@@ -46,6 +56,7 @@
                 app:layout_constraintEnd_toEndOf="@+id/progressLoadHistory"
                 app:layout_constraintStart_toStartOf="@+id/progressLoadHistory"
                 app:layout_constraintTop_toTopOf="@+id/progressLoadHistory" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </FrameLayout>

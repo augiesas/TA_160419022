@@ -1,6 +1,7 @@
 package id.ac.ubaya.ta_160419022.view
 
 import android.content.ContentValues
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -20,8 +21,10 @@ import com.google.gson.Gson
 import id.ac.ubaya.ta_160419022.R
 import id.ac.ubaya.ta_160419022.model.ApiResponse
 import id.ac.ubaya.ta_160419022.model.ApiResponseNutrition
+import id.ac.ubaya.ta_160419022.util.loadImage
 import id.ac.ubaya.ta_160419022.viewmodel.DetailViewModel
 import kotlinx.android.synthetic.main.fragment_detail.*
+import kotlinx.android.synthetic.main.fragment_detail.view.*
 import kotlinx.android.synthetic.main.history_list_item.*
 import java.io.File
 import java.io.FileOutputStream
@@ -31,6 +34,8 @@ import java.time.format.DateTimeFormatter
 class DetailFragment : Fragment() {
     private lateinit var viewModel: DetailViewModel
     private val nutritionListAdapter = NutritionListAdapter(arrayListOf())
+    private var fileUri:String ?= null
+    private var fileName:String ?= null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,11 +50,15 @@ class DetailFragment : Fragment() {
 //        viewModel =ViewModelProvider(this).get(DetailViewModel::class.java)
         viewModel = ViewModelProvider(this)[DetailViewModel::class.java]
 
-        val fileUri = DetailFragmentArgs.fromBundle(requireArguments()).fileUri
-        Log.d("test-file",fileUri)
+        fileUri = DetailFragmentArgs.fromBundle(requireArguments()).fileUri
+        // load Image
+        val bitmap = BitmapFactory.decodeFile(fileUri)
+        imgFruitDetail.setImageBitmap(bitmap)
+
+        Log.d("test-file", fileUri!!)
 
         Log.d("test 1","masuk pls")
-        viewModel.sendPhoto(fileUri)
+        viewModel.sendPhoto(fileUri!!)
 
         recDetail.layoutManager = LinearLayoutManager(context)
         recDetail.adapter = nutritionListAdapter
@@ -58,8 +67,19 @@ class DetailFragment : Fragment() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
+    fun SaveArray(fruit: ApiResponseNutrition){
+        // Save the array
+        val fileName = fileName+".json"
+        val json = Gson().toJson(fruit)
+        val file = File(requireContext().filesDir, fileName)
+        FileOutputStream(file).use {
+            it.write(json.toByteArray())
+        }
+        Log.d("test-save","$fileName saved successfully in ${context?.filesDir?.absolutePath}!")
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
     fun update(nutritionDetail: ApiResponseNutrition){
-//        val api:ArrayList<ApiResponse> = arrayListOf(ApiResponse(standDetail))
         Log.d("ajax1", nutritionDetail.toString())
 
         val fruit = nutritionDetail
@@ -68,31 +88,7 @@ class DetailFragment : Fragment() {
         txtFruitName.text = fruit.data[0].value.toString()
         txtLink.text = fruit.data[27].value.toString()
 
-        // Save the array
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-        val current = LocalDateTime.now().format(formatter)
-        val fileName = current+".json"
-        val json = Gson().toJson(fruit)
-        val file = File(requireContext().filesDir, fileName)
-        FileOutputStream(file).use {
-            it.write(json.toByteArray())
-        }
-        Log.d("test-save","$fileName saved successfully in ${context?.filesDir?.absolutePath}!")
-
-//        val resolver = requireContext().contentResolver
-//        val contentValues = ContentValues().apply {
-//            put(MediaStore.MediaColumns.DISPLAY_NAME, file)
-//            put(MediaStore.MediaColumns.MIME_TYPE, "text/plain")
-//            put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOCUMENTS + "/myapp")
-//        }
-//        val uri = resolver.insert(MediaStore.Files.getContentUri("external"), contentValues)
-//        uri?.let {
-//            resolver.openOutputStream(uri)?.use { outputStream ->
-//                outputStream.write(fruit.data.joinToString(", ").toByteArray())
-//            }
-//        }
-
-//        imgDetail.loadImage(stand.url_img, progressBarDetail)
+        SaveArray(fruit)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

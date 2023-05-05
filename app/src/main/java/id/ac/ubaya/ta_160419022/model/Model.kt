@@ -48,3 +48,7 @@ data class NutritionList(
 data class ApiResponseNutrition(
     val data: List<NutritionList>
 )
+
+data class History(
+    val data: List<ApiResponseNutrition>
+)
