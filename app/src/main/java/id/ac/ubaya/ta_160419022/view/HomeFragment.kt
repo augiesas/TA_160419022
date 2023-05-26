@@ -3,6 +3,7 @@ package id.ac.ubaya.ta_160419022.view
 //import com.google.gson.GsonBuilder
 //import com.google.gson.JsonParser
 
+import android.Manifest
 import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.ContentValues
@@ -51,10 +52,9 @@ class HomeFragment : Fragment() {
 
     companion object{
         private const val TAG = "camera"
-        private const val FILENAME_FORMAT = "yyy-MM-dd-HH-mm-ss"
         private const val REQUEST_CODE_PERMISSIONS = 10
+        private const val REQUEST_CODE_PERMISSIONS_CAMERA = 20
         private const val IMAGE_PICK_CODE = 100
-        private val REQUIRED_PERMISSIONS = arrayOf(android.Manifest.permission.CAMERA)
     }
 
     override fun onCreateView(
@@ -70,38 +70,32 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         // When choose from gallery
         galleryButton.setOnClickListener {
-            pickFromGallery()
+            checkPermissionsAndPickImage()
         }
         // When Captured
         captureButton.setOnClickListener {
             capture()
         }
-        if(permissionGranted()){
-            startCamera()
-        }
-        else {
-            ActivityCompat.requestPermissions(context as Activity, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
-        }
+
         outputDirectory = getOutputDirectory()
     }
 
-    private fun pickFromGallery() {
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
-
-        startActivityForResult(intent, IMAGE_PICK_CODE)
+    // ===============================================================================================================================================================
+    // CAMERA SECTION
+    // To start camera after the permission allowed
+    override fun onResume() {
+        super.onResume()
+        requestCameraPermission()
     }
 
-    private fun getOutputDirectory(): File {
-        val mediaDir = context?.getExternalFilesDirs(Environment.DIRECTORY_PICTURES)?.firstOrNull()
-        return if (mediaDir != null && mediaDir.exists())
-            mediaDir else requireContext().filesDir
-    }
+    private fun requestCameraPermission() {
+        val cameraPermission = Manifest.permission.CAMERA
 
-
-    private fun permissionGranted() = REQUIRED_PERMISSIONS.all{
-        ContextCompat.checkSelfPermission(
-            requireActivity().baseContext, it) == PackageManager.PERMISSION_GRANTED
+        if (ContextCompat.checkSelfPermission(requireContext(), cameraPermission) == PackageManager.PERMISSION_GRANTED) {
+            startCamera()
+        } else {
+            requestPermissions(arrayOf(cameraPermission), REQUEST_CODE_PERMISSIONS_CAMERA)
+        }
     }
 
     private fun startCamera() {
@@ -132,11 +126,6 @@ class HomeFragment : Fragment() {
                 Log.e(TAG, "Use case binding failed", exc)
             }
         }, context?.let { ContextCompat.getMainExecutor(it) })
-    }
-
-    private fun isExternalStorageAvailable(): Boolean {
-        val state = Environment.getExternalStorageState()
-        return Environment.MEDIA_MOUNTED == state
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -182,14 +171,78 @@ class HomeFragment : Fragment() {
         })
     }
 
+    // This is to get where the captured image should be saved
+    // This function will get the android - data - picture - folder
+    private fun getOutputDirectory(): File {
+        val mediaDir = context?.getExternalFilesDirs(Environment.DIRECTORY_PICTURES)?.firstOrNull()
+        return if (mediaDir != null && mediaDir.exists())
+            mediaDir else requireContext().filesDir
+    }
+    // ===============================================================================================================================================================
+
+    // GALLERY SECTION
+    // to run the gallery intent
+    private fun pickFromGallery() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+
+        startActivityForResult(intent, IMAGE_PICK_CODE)
+    }
+
+    // This function is used to get the file path of the picked image
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == IMAGE_PICK_CODE && resultCode == RESULT_OK)
+        {
+            val selectedImage: Uri? = data?.data
+            val imagePath: String? = selectedImage?.let { getImageFilePath(it) }
+            Log.d("test-folder", imagePath.toString())
+            val action = HomeFragmentDirections.actionDetailFragment(imagePath!!)
+            if (action != null) {
+                Navigation.findNavController(requireView()).navigate(action)
+            }
+        }
+    }
+
+    // This function used to convert uri file into path file
+    private fun getImageFilePath(uri: Uri): String? {
+        val cursor = requireActivity().contentResolver.query(uri, null, null, null, null)
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val columnIndex = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+                return it.getString(columnIndex)
+            }
+        }
+        return null
+    }
+
+    //This function used to organize the permission for read and write external storage inside android
+    private fun checkPermissionsAndPickImage() {
+        val readPermission = Manifest.permission.READ_EXTERNAL_STORAGE
+        val writePermission = Manifest.permission.WRITE_EXTERNAL_STORAGE
+
+        val hasReadPermission = ContextCompat.checkSelfPermission(requireContext(), readPermission) == PackageManager.PERMISSION_GRANTED
+        val hasWritePermission = ContextCompat.checkSelfPermission(requireContext(), writePermission) == PackageManager.PERMISSION_GRANTED
+
+        if (hasReadPermission && hasWritePermission) {
+            pickFromGallery()
+        } else {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(readPermission, writePermission), REQUEST_CODE_PERMISSIONS)
+        }
+    }
+    // ===============================================================================================================================================================
+
+    // PERMISSION SECTION
+    // This function used to organize the permission for camera and write and read folder
+    // like what will happen if the permission is granted
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        if (requestCode == REQUEST_CODE_PERMISSIONS){
+        if (requestCode == REQUEST_CODE_PERMISSIONS_CAMERA){
             Log.d("test-permission",requestCode.toString())
-            if (permissionGranted()){
+            if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }){
                 startCamera()
             } else {
                 Log.d("test-permission","masuk sini")
@@ -197,14 +250,13 @@ class HomeFragment : Fragment() {
                 requireActivity().finish()
             }
         }
-    }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == IMAGE_PICK_CODE && resultCode == RESULT_OK)
-        {
-            val action = HomeFragmentDirections.actionDetailFragment(fileuri!!)
-            Navigation.findNavController(this.requireView()).navigate(action)
+        if (requestCode == REQUEST_CODE_PERMISSIONS){
+            if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+                pickFromGallery()
+            } else {
+                Toast.makeText(context, "This application need permission to access folder", Toast.LENGTH_LONG).show()
+            }
         }
     }
 }

@@ -34,18 +34,21 @@ class DetailViewModel (application: Application) : AndroidViewModel(application)
 
         val file = File(fileUri)
         Log.d("test 2","masuk")
+        Log.d("test 2-file",file.toString())
 
         val requestBody: RequestBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart("file", file.name, RequestBody.create("image/jpeg".toMediaTypeOrNull(), file))
             .build()
         Log.d("test 3","masuk")
+        Log.d("test 3-request body",requestBody.toString())
 
         val request = Request.Builder()
-            .url("http://192.168.1.7:8000/predict")
+            .url("http://192.168.1.4:8000/predict")
             .post(requestBody)
             .build()
         Log.d("test 4","masuk")
+        Log.d("test 4-request",request.toString())
 
         client.newCall(request).enqueue(object : Callback {
             @RequiresApi(Build.VERSION_CODES.O)
