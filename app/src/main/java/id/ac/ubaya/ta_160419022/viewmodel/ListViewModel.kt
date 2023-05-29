@@ -1,12 +1,9 @@
 package id.ac.ubaya.ta_160419022.viewmodel
 
-import android.R.array
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
-import com.google.gson.JsonObject
-import com.google.gson.reflect.TypeToken
 import id.ac.ubaya.ta_160419022.model.ApiResponseNutrition
 import id.ac.ubaya.ta_160419022.model.History
 import org.json.JSONArray
@@ -51,7 +48,6 @@ class ListViewModel:ViewModel(){
             Log.d("test-jsonArrayList",jsonArray.length().toString())
 
             val jsonArray = JSONArray(jsonArray.toString())
-
 
             for (i in 0 until jsonArray.length()){
                 val jsonObject = jsonArray.getJSONObject(i)

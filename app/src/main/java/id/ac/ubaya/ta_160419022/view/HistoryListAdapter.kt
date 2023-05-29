@@ -34,7 +34,6 @@ class HistoryListAdapter(private val context:Context, val historyList: ArrayList
 
         val history = api[0].data[position]
         Log.d("test-history", history.toString())
-        val internalStorageDir = context.filesDir
 
         with(holder.view){
             val fileuri = context.getExternalFilesDirs(Environment.DIRECTORY_PICTURES)?.firstOrNull().toString()+"/"+history.data[28].value.toString()

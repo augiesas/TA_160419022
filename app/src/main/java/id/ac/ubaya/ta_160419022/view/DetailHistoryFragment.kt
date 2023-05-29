@@ -46,10 +46,6 @@ class DetailHistoryFragment : Fragment() {
         val bitmap = BitmapFactory.decodeFile(fileUri)
         imgFruitDetailHistory.setImageBitmap(bitmap)
 
-        Log.d("test-file", fileUri!!)
-
-        Log.d("test 1","masuk pls")
-
         val filePath = fileUri.toString()
         val imageName = filePath.substringAfterLast("/")
         fileName = imageName?.substringBeforeLast(".jpg")
