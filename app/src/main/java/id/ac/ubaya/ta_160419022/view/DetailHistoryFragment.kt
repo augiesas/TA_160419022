@@ -13,15 +13,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.gson.Gson
 import id.ac.ubaya.ta_160419022.R
 import id.ac.ubaya.ta_160419022.model.ApiResponseNutrition
 import id.ac.ubaya.ta_160419022.viewmodel.DetailViewModel
 import kotlinx.android.synthetic.main.fragment_detail.*
-import java.io.File
-import java.io.FileOutputStream
+import kotlinx.android.synthetic.main.fragment_detail.imgFruitDetailHistory
+import kotlinx.android.synthetic.main.fragment_detail.recDetailHistory
+import kotlinx.android.synthetic.main.fragment_detail_history.*
 
-class DetailFragment : Fragment() {
+class DetailHistoryFragment : Fragment() {
     private lateinit var viewModel: DetailViewModel
     private val nutritionListAdapter = NutritionListAdapter(arrayListOf())
     private var fileUri:String ?= null
@@ -32,7 +32,7 @@ class DetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_detail, container, false)
+        return inflater.inflate(R.layout.fragment_detail_history, container, false)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -49,41 +49,27 @@ class DetailFragment : Fragment() {
         Log.d("test-file", fileUri!!)
 
         Log.d("test 1","masuk pls")
-        viewModel.sendPhoto(fileUri!!)
-
-        recDetailHistory.layoutManager = LinearLayoutManager(context)
-        recDetailHistory.adapter = nutritionListAdapter
 
         val filePath = fileUri.toString()
         val imageName = filePath.substringAfterLast("/")
         fileName = imageName?.substringBeforeLast(".jpg")
+        var fileJson = "/data/user/0/id.ac.ubaya.ta_160419022/files/"+fileName+".json"
+        viewModel.read(fileJson)
+
+        recDetailHistory.layoutManager = LinearLayoutManager(context)
+        recDetailHistory.adapter = nutritionListAdapter
 
         observeViewModel()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun SaveArray(fruit: ApiResponseNutrition){
-        // Save the array
-        val fileName = fileName+".json"
-        val json = Gson().toJson(fruit)
-        val file = File(requireContext().filesDir, fileName)
-        FileOutputStream(file).use {
-            it.write(json.toByteArray())
-        }
-        Log.d("test-save","$fileName saved successfully in ${context?.filesDir?.absolutePath}!")
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
     fun update(nutritionDetail: ApiResponseNutrition){
         Log.d("ajax1", nutritionDetail.toString())
 
         val fruit = nutritionDetail
         Log.d("test-fruit",fruit.toString())
         Log.d("test-fruit",fruit.data.toString())
-        txtFruitName.text = fruit.data[0].value.toString()
-        txtLink.text = fruit.data[27].value.toString()
-
-        SaveArray(fruit)
+        txtFruitNameHistory.text = fruit.data[0].value.toString()
+        txtLinkHistory.text = fruit.data[27].value.toString()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -95,12 +81,11 @@ class DetailFragment : Fragment() {
             nutritionListAdapter.updateNutritionList(it)
             if(it == null){
                 recDetailHistory.visibility= View.GONE
-                progressLoadDetail.visibility= View.VISIBLE
+                progressLoadDetailHistory.visibility= View.VISIBLE
             }else{
                 recDetailHistory.visibility= View.VISIBLE
-                progressLoadDetail.visibility= View.GONE
+                progressLoadDetailHistory.visibility= View.GONE
             }
         })
     }
-
 }

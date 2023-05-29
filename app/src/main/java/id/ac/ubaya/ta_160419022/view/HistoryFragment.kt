@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,6 +30,9 @@ class HistoryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.title = "History"
+
+        recHistory.adapter?.notifyDataSetChanged()
 
         fruitListAdapter = HistoryListAdapter(requireContext(), arrayListOf())
 
@@ -39,7 +43,7 @@ class HistoryFragment : Fragment() {
         recHistory.adapter = fruitListAdapter
 
         observeViewModel()
-        Log.d("test-load","masuk gak?")
+        Log.d("test-load-history","masuk gak?")
 
         btnRemove.setOnClickListener {
             val directory = File("/data/user/0/id.ac.ubaya.ta_160419022/files")

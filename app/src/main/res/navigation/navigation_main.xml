@@ -32,7 +32,16 @@
         android:label="fragment_history"
         tools:layout="@layout/fragment_history" >
         <action
-            android:id="@+id/actionHistoryDetail"
-            app:destination="@id/detailFragment" />
+            android:id="@+id/actionDetailHistory"
+            app:destination="@id/detailHistoryFragment3" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailHistoryFragment3"
+        android:name="id.ac.ubaya.ta_160419022.view.DetailHistoryFragment"
+        android:label="fragment_detail_history"
+        tools:layout="@layout/fragment_detail_history" >
+        <argument
+            android:name="fileUri"
+            app:argType="string" />
     </fragment>
 </navigation>

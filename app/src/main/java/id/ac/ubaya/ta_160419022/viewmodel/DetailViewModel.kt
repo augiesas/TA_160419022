@@ -12,6 +12,7 @@ import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import id.ac.ubaya.ta_160419022.model.ApiResponse
 import id.ac.ubaya.ta_160419022.model.ApiResponseNutrition
+import id.ac.ubaya.ta_160419022.model.History
 import id.ac.ubaya.ta_160419022.view.HomeFragment
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -44,7 +45,7 @@ class DetailViewModel (application: Application) : AndroidViewModel(application)
         Log.d("test 3-request body",requestBody.toString())
 
         val request = Request.Builder()
-            .url("http://192.168.1.4:8000/predict")
+            .url("http://192.168.1.7:8000/predict")
             .post(requestBody)
             .build()
         Log.d("test 4","masuk")
@@ -70,5 +71,17 @@ class DetailViewModel (application: Application) : AndroidViewModel(application)
                 loadingLiveData.postValue(false)
             }
         })
+    }
+
+    fun read(fileJson: String){
+        val content = File(fileJson).readText()
+
+        val jsonObject = JSONObject(content)
+
+        val result: ApiResponseNutrition = Gson().fromJson(jsonObject.toString(), ApiResponseNutrition::class.java)
+        Log.d("test-result",result.toString())
+
+        nutritionLiveData.postValue(result)
+        loadingLiveData.postValue(false)
     }
 }

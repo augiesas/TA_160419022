@@ -21,6 +21,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -68,6 +69,7 @@ class HomeFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (activity as AppCompatActivity).supportActionBar?.title = "Fruit Nutrition Facts"
         // When choose from gallery
         galleryButton.setOnClickListener {
             checkPermissionsAndPickImage()
@@ -131,7 +133,7 @@ class HomeFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun capture() {
         // Create file
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         val current = LocalDateTime.now().format(formatter)
         file = File(outputDirectory,current+".jpg")
 

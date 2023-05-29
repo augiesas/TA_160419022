@@ -21,6 +21,7 @@ class ListViewModel:ViewModel(){
     val jsonArray = JSONArray()
     val fileList:MutableList<String> = mutableListOf()
     val nutritionLists: MutableList<ApiResponseNutrition> = mutableListOf()
+    val arrayTemp:MutableList<String> = mutableListOf()
 
     fun refresh() {
         // Load all json file data
@@ -33,21 +34,29 @@ class ListViewModel:ViewModel(){
             txtFiles?.forEach { file ->
                 // Do something with each TXT file
                 val content = file.readText()
+                val fileName = file.name.replace(".json","")
                 Log.d("test-txtFiles",file.name.replace(".json",""))
                 Log.d("test-load",content)
 
                 val jsonObject = JSONObject(content)
 
-                // insert the JSON object into the JSON array
-                jsonArray.put(jsonObject)
-                fileList.add(file.toString())
+                if(fileName !in arrayTemp){
+                    // insert the JSON object into the JSON array
+                    jsonArray.put(jsonObject)
+                    fileList.add(file.toString())
+                    arrayTemp.add(fileName)
+                }
             }
+            nutritionLists.clear()
+            Log.d("test-jsonArrayList",jsonArray.length().toString())
+
             val jsonArray = JSONArray(jsonArray.toString())
+
 
             for (i in 0 until jsonArray.length()){
                 val jsonObject = jsonArray.getJSONObject(i)
                 val nutritionList:ApiResponseNutrition = Gson().fromJson(jsonObject.toString(),ApiResponseNutrition::class.java)
-                println(nutritionList)
+                Log.d("test-nutritionlist",nutritionList.toString())
                 nutritionLists.add(nutritionList)
             }
             val history = History(data = nutritionLists)
