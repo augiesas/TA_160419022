@@ -13,6 +13,8 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:text="Kategori"
+        android:textColor="#070707"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -33,6 +35,8 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:text="TextView"
+        android:textColor="#070707"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="@+id/txtNutritionCategory"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView4"

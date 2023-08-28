@@ -45,7 +45,7 @@ class DetailViewModel (application: Application) : AndroidViewModel(application)
         Log.d("test 3-request body",requestBody.toString())
 
         val request = Request.Builder()
-            .url("http://192.168.1.7:8000/predict")
+            .url("http://192.168.43.248:8000/predict")
             .post(requestBody)
             .build()
         Log.d("test 4","masuk")
@@ -58,12 +58,22 @@ class DetailViewModel (application: Application) : AndroidViewModel(application)
                 Log.d("test-berhasil 2",call.toString())
 
                 val json = response.body?.string()
-                Log.d("test-json",json.toString())
-                val result: ApiResponseNutrition = Gson().fromJson(json, ApiResponseNutrition::class.java)
-                Log.d("test-result",result.toString())
+                val jsonArray = JSONObject(json).getJSONArray("data")
+                val jsonObject = jsonArray.getJSONObject(0)
+//                Log.d("test-response", jsonObject[0.toString()] as String)
+//                val response = jsonObject.getString("response")
+                if(jsonObject.has("response")) {
+                    Log.d("test-Response","NO")
+                    nutritionLoadErrorLiveData.postValue(true)
+                }
+                else if (jsonObject.has("kategori")){
+                    Log.d("test-json",json.toString())
+                    val result: ApiResponseNutrition = Gson().fromJson(json, ApiResponseNutrition::class.java)
+                    Log.d("test-result",result.toString())
 
-                nutritionLiveData.postValue(result)
-                loadingLiveData.postValue(false)
+                    nutritionLiveData.postValue(result)
+                    loadingLiveData.postValue(false)
+                }
             }
 
             override fun onFailure(call: Call, e: IOException) {

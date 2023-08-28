@@ -54,7 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Read More"
-                android:textColor="#2196F3"
+                android:textColor="@color/button"
                 app:layout_constraintBottom_toBottomOf="@+id/imgFruitHistory"
                 app:layout_constraintEnd_toStartOf="@+id/textView3"
                 app:layout_constraintTop_toTopOf="@+id/imgFruitHistory" />
@@ -66,8 +66,8 @@
                 android:layout_marginTop="1dp"
                 android:layout_marginEnd="8dp"
                 android:drawableEnd="@drawable/ic_baseline_keyboard_arrow_right_24"
-                android:textColor="#2196F3"
-                app:drawableTint="#2196F3"
+                android:textColor="@color/button"
+                app:drawableTint="@color/button"
                 app:layout_constraintBottom_toBottomOf="@+id/txtReadMore"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/txtReadMore" />

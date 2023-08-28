@@ -10,6 +10,72 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardLoad"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:cardBackgroundColor="@color/button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ProgressBar
+                    android:id="@+id/progressLoadDetail"
+                    style="?android:attr/progressBarStyleLarge"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:backgroundTint="#F6F4F4"
+                    android:foregroundTint="#F6F4F4"
+                    android:progressBackgroundTint="#F6F4F4"
+                    android:progressTint="#FBFBFB"
+                    android:secondaryProgressTint="#F6F4F4"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <EditText
+                    android:id="@+id/txtError"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:clickable="false"
+                    android:gravity="center|top"
+                    android:inputType="none"
+                    android:linksClickable="false"
+                    android:longClickable="false"
+                    android:text="This image can't be recognized.
+                                  Please take another image!"
+                    android:textColor="#FBFBFB"
+                    android:textIsSelectable="false"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/progressLoadDetail"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/progressLoadDetail" />
+
+                <Button
+                    android:id="@+id/btnBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:backgroundTint="@color/navbar"
+                    android:text="Go Back"
+                    app:iconTint="@color/navbar"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/txtError"
+                    app:rippleColor="@color/navbar" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -59,7 +125,7 @@
                     android:layout_marginTop="24dp"
                     android:text="Fruit Name"
                     android:textColor="#101010"
-                    android:textSize="20sp"
+                    android:textSize="24sp"
                     app:layout_constraintEnd_toEndOf="@+id/cardView"
                     app:layout_constraintStart_toStartOf="@+id/cardView"
                     app:layout_constraintTop_toBottomOf="@+id/cardView" />
@@ -92,24 +158,18 @@
                     app:layout_constraintBottom_toTopOf="@+id/textView5"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView2" />
-
-                <ProgressBar
-                    android:id="@+id/progressLoadDetail"
-                    style="?android:attr/progressBarStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="@+id/recDetailHistory"
-                    app:layout_constraintEnd_toEndOf="@+id/recDetailHistory"
-                    app:layout_constraintStart_toStartOf="@+id/recDetailHistory"
-                    app:layout_constraintTop_toTopOf="@+id/recDetailHistory" />
+                    app:layout_constraintTop_toBottomOf="@+id/textView2"/>
 
                 <TextView
                     android:id="@+id/textView5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="64dp"
+                    android:clickable="true"
+                    android:linksClickable="true"
                     android:text="Sumber : "
+                    android:textColor="#070707"
+                    android:textSize="18sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/recDetailHistory" />
 
@@ -118,7 +178,11 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
+                    android:clickable="true"
+                    android:linksClickable="true"
                     android:text="TextView"
+                    android:textColor="#070707"
+                    android:textSize="18sp"
                     app:layout_constraintEnd_toEndOf="@+id/recDetailHistory"
                     app:layout_constraintStart_toEndOf="@+id/textView5"
                     app:layout_constraintTop_toTopOf="@+id/textView5" />

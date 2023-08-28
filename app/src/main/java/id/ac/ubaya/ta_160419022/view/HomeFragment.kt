@@ -8,6 +8,7 @@ import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.ContentValues
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -31,6 +32,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
+import androidx.preference.PreferenceManager
 import com.google.common.util.concurrent.ListenableFuture
 import id.ac.ubaya.ta_160419022.R
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -38,6 +40,7 @@ import okhttp3.*
 import java.io.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import androidx.cardview.widget.CardView
 
 
 class HomeFragment : Fragment() {
@@ -48,8 +51,10 @@ class HomeFragment : Fragment() {
     private var client: OkHttpClient ?= null
     private var fileuri: String ?= null
     private var file:File ?= null
+    private var isCardVisible = 0
 
     private lateinit var outputDirectory: File
+    private lateinit var sharedPreferences: SharedPreferences
 
     companion object{
         private const val TAG = "camera"
@@ -70,6 +75,35 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as AppCompatActivity).supportActionBar?.title = "Fruit Nutrition Facts"
+        // For tutorial
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        val isFirstTime = sharedPreferences.getBoolean("firstTime", true)
+        Log.d("test-FirstTime", isFirstTime.toString())
+        if (!isFirstTime) {
+            cardTutorial.visibility = View.GONE
+        } else {
+            cardTutorial.visibility = View.VISIBLE
+            imgTutorialCamera.visibility = View.VISIBLE
+            imgTutorialGallery.visibility = View.INVISIBLE
+        }
+
+        btnNext.setOnClickListener {
+            isCardVisible += 1
+            if (isCardVisible == 1) {
+                // First click: toggle image visibility
+                imgTutorialCamera.visibility = View.INVISIBLE
+                imgTutorialGallery.visibility = View.VISIBLE
+            }
+            if (isCardVisible == 2){
+                Log.d("test-card","MASUK SINI")
+                // Subsequent clicks: hide the card view and its contents
+                cardTutorial.visibility = View.GONE
+                val editor = sharedPreferences.edit()
+                editor.putBoolean("firstTime", false)
+                editor.apply()
+            }
+        }
+
         // When choose from gallery
         galleryButton.setOnClickListener {
             checkPermissionsAndPickImage()

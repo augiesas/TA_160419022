@@ -39,6 +39,9 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         (activity as AppCompatActivity).supportActionBar?.title = "Nutrition Facts Result"
 
+        txtError.visibility = View.GONE
+        btnBack.visibility = View.GONE
+
         viewModel = ViewModelProvider(this)[DetailViewModel::class.java]
 
         fileUri = DetailFragmentArgs.fromBundle(requireArguments()).fileUri
@@ -59,6 +62,11 @@ class DetailFragment : Fragment() {
         fileName = imageName?.substringBeforeLast(".jpg")
 
         observeViewModel()
+
+        btnBack.setOnClickListener {
+            val fragmentManager = requireActivity().supportFragmentManager
+            fragmentManager.popBackStack()
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -93,14 +101,36 @@ class DetailFragment : Fragment() {
         })
         viewModel.nutritionLiveData.observe(viewLifecycleOwner, Observer {
             nutritionListAdapter.updateNutritionList(it)
-            if(it == null){
-                recDetailHistory.visibility= View.GONE
-                progressLoadDetail.visibility= View.VISIBLE
-            }else{
-                recDetailHistory.visibility= View.VISIBLE
-                progressLoadDetail.visibility= View.GONE
-            }
         })
+        viewModel.nutritionLoadErrorLiveData.observe(viewLifecycleOwner){
+            if(it){
+                Log.d("test-LiveData", "Masuk1")
+                txtError.visibility = View.VISIBLE
+                btnBack.visibility = View.VISIBLE
+                progressLoadDetail.visibility = View.GONE
+            }
+            else{
+                Log.d("test-LiveData", "Masuk2")
+                txtError.visibility = View.GONE
+                btnBack.visibility = View.GONE
+
+            }
+        }
+        viewModel.loadingLiveData.observe(viewLifecycleOwner){
+            Log.d("test-it", it.toString())
+
+            if(it){
+                Log.d("test-LiveData", "Masuk3")
+                recDetailHistory.visibility = View.GONE
+                progressLoadDetail.visibility = View.VISIBLE
+            }
+            else{
+                Log.d("test-LiveData", "Masuk4")
+                recDetailHistory.visibility = View.VISIBLE
+                progressLoadDetail.visibility = View.GONE
+                cardLoad.visibility = View.GONE
+            }
+        }
     }
 
 }
